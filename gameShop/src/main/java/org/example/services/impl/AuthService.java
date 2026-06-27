@@ -1,5 +1,8 @@
 package org.example.services.impl;
 
+import org.example.dto.LoginRequest;
+import org.example.dto.LoginResponse;
+import org.example.dto.RegisterRequest;
 import org.example.models.Role;
 import org.example.models.User;
 import org.example.repositories.UserRepository;
@@ -27,25 +30,29 @@ public class AuthService implements AuthServiceInterface {
     }
 
     @Override
-    public boolean register(String login, String rawPassword) {
-        if (userRepository.findByLogin(login).isPresent()) {
+    public boolean register(RegisterRequest registerRequest) {
+        if (userRepository.findByLogin(registerRequest.login()).isPresent()) {
             throw new IllegalArgumentException("This login is already taken!");
         }
 
-        String hashedPassword = passwordEncoder.encode(rawPassword);
+        String hashedPassword = passwordEncoder.encode(registerRequest.password());
 
-        User user = User.builder().login(login).passwordHash(hashedPassword).role(Role.USER).build();
+        User user = User.builder().login(registerRequest.login()).passwordHash(hashedPassword).role(Role.USER).build();
         userRepository.save(user);
         return true;
     }
 
     @Override
-    public String login(String login, String rawPassword) {
-        UsernamePasswordAuthenticationToken authenticationToken = new UsernamePasswordAuthenticationToken(login, rawPassword);
+    public LoginResponse login(LoginRequest loginRequest) {
 
-        Authentication authResult = authenticationManager.authenticate(authenticationToken);
-        UserDetails userDetails = (UserDetails) authResult.getPrincipal();
+        Authentication auth = authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(
+                loginRequest.login(),
+                loginRequest.password()
+        ));
 
-        return jwtUtil.generateToken(userDetails);
+        UserDetails userDetails = (UserDetails) auth.getPrincipal();
+
+        String token = jwtUtil.generateToken(userDetails);
+        return new LoginResponse(token);
     }
 }
