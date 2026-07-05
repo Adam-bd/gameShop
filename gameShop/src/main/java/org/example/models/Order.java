@@ -33,10 +33,21 @@ public class Order {
     private OrderStatus status;
 
     @OneToMany(mappedBy = "order", cascade = CascadeType.ALL, orphanRemoval = true)
+    @Builder.Default
     private List<OrderItem> items = new ArrayList<>();
 
     public void addItem(OrderItem item) {
         items.add(item);
         item.setOrder(this);
+    }
+
+    public Order copy() {
+        return Order.builder()
+                .id(id)
+                .user(user)
+                .createdAt(createdAt)
+                .status(status)
+                .items(new ArrayList<>(items))
+                .build();
     }
 }

@@ -35,4 +35,15 @@ public class OrderItem {
 
     @Column(nullable = false)
     private int quantity;
+
+    public OrderItem copy() {
+        return OrderItem.builder()
+                .id(id)
+                .order(order)
+                .game(game)
+                .gameTitle(gameTitle)
+                .unitPrice(unitPrice)
+                .quantity(quantity)
+                .build();
+    }
 }
