@@ -87,4 +87,26 @@ public class OrderService implements OrderServiceInterface {
         order.setStatus(OrderStatus.valueOf(newStatus));
         orderRepository.save(order);
     }
+
+    @Override
+    public List<OrderResponse> getAllOrders() {
+        List<Order> orders = orderRepository.findAll();
+
+        return orders.stream()
+                .map(order -> new OrderResponse(
+                        order.getId(),
+                        order.getUser().getLogin(),
+                        order.getCreatedAt(),
+                        order.getStatus(),
+                        order.getItems().stream()
+                                .map(item -> new OrderItemResponse(
+                                        item.getId(),
+                                        item.getGameTitle(),
+                                        item.getUnitPrice(),
+                                        item.getQuantity()
+                                ))
+                                .toList()
+                ))
+                .toList();
+    }
 }

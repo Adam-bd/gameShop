@@ -11,4 +11,6 @@ public interface OrderServiceInterface {
     List<OrderResponse> seeOrderHistory(String userId);
 
     void changeOrderStatus(String orderId, String newStatus);
+
+    List<OrderResponse> getAllOrders();
 }
