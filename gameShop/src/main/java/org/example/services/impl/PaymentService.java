@@ -28,6 +28,9 @@ public class PaymentService implements PaymentServiceInterface {
     @Value("${stripe.api.key}")
     private String stripeApiKey;
 
+    @Value("${app.base.url}")
+    private String baseUrl;
+
     public PaymentService(OrderRepository orderRepository, UserRepository userRepository) {
         this.orderRepository = orderRepository;
         this.userRepository = userRepository;
@@ -69,8 +72,8 @@ public class PaymentService implements PaymentServiceInterface {
                 .setMode(SessionCreateParams.Mode.PAYMENT)
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.CARD)
                 .addPaymentMethodType(SessionCreateParams.PaymentMethodType.BLIK)
-                .setSuccessUrl("http://localhost:8080/api/payment/success?orderId=" + orderId)
-                .setCancelUrl("http://localhost:8080/api/payment/cancel")
+                .setSuccessUrl(baseUrl + "/api/payment/success")
+                .setCancelUrl(baseUrl + "/api/payment/cancel")
                 .addAllLineItem(lineItems)
                 .putMetadata("orderId", orderId) // przekazujemy Stripe z jakim order ma połączyć tą płatność
                 .build();
