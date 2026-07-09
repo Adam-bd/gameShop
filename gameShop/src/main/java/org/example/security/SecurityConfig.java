@@ -31,6 +31,10 @@ public class SecurityConfig {
                 .authorizeHttpRequests(auth -> auth
                         .requestMatchers(org.springframework.http.HttpMethod.GET, "/api/games/**").permitAll()
                                 .requestMatchers("/api/auth/**", "/error").permitAll()
+                                .requestMatchers("/api/webhook/**").permitAll() //do zwrócenia potwierdzenia płatności przez Stripe
+                                .requestMatchers("/api/payment/success", "/api/payment/cancel").permitAll()
+//                                .requestMatchers("/api/payment/success",
+//                                        "/api/payment/cancel").permitAll() //test
 //                        .requestMatchers("/api/admin/**").hasRole("ADMIN")
                         .anyRequest().authenticated()
                 )
