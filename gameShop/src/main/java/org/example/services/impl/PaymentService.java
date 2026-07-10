@@ -49,8 +49,8 @@ public class PaymentService implements PaymentServiceInterface {
             throw new RuntimeException("User not authorized for this order");
         }
 
-        if (order.getStatus().equals(OrderStatus.valueOf("PAID"))) {
-            throw new RuntimeException("Order is already paid");
+        if (order.getStatus() != OrderStatus.NEW) {
+            throw new RuntimeException("Płatność może zostać zainicjowana tylko dla nowych zamówień. Aktualny status to: " + order.getStatus());
         }
 
         // Mapowanie pozycji z zamówienia na format Stripe'a

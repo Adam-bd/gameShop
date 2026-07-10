@@ -45,24 +45,20 @@ public class StripeWebhookController {
         if ("checkout.session.completed".equals(event.getType())) {
             System.out.println("-> Odebrano event checkout.session.completed!");
 
-            // 1. Wyciągamy obiekt z eventu (bezpiecznie lub siłowo)
             var deserializer = event.getDataObjectDeserializer();
             com.stripe.model.StripeObject stripeObject;
 
             if (deserializer.getObject().isPresent()) {
                 stripeObject = deserializer.getObject().get();
             } else {
-                // To ta magiczna linijka, która rozwiązuje Twój problem!
                 System.out.println("-> Różnica wersji API. Wymuszam deserializację (deserializeUnsafe)...");
                 stripeObject = deserializer.deserializeUnsafe();
             }
 
-            // 2. Rzutujemy na sesję i wyciągamy ID
             Session session = (Session) stripeObject;
             String orderId = session.getMetadata().get("orderId");
             System.out.println("-> Wyciągnięte orderId z metadanych: " + orderId);
 
-            // 3. Zmiana statusu
             if (orderId != null) {
                 orderService.changeOrderStatus(orderId, "PAID");
                 System.out.println("-> Status zamówienia zmieniony na PAID w bazie!");
